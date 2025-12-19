@@ -1,0 +1,75 @@
+@model FichaRPG.Models.Personagem
+
+@{
+    ViewData["Title"] = "Editar Personagem";
+}
+
+<div class="form-container">
+    <h1>✏️ Editar Personagem</h1>
+    
+    <form asp-action="Editar" method="post" class="personagem-form">
+        <input type="hidden" asp-for="Id" />
+        
+        <div class="form-group">
+            <label asp-for="Nome">Nome do Personagem</label>
+            <input asp-for="Nome" class="form-control" required />
+            <span asp-validation-for="Nome" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Classe">Classe</label>
+            <input asp-for="Classe" class="form-control" required />
+            <span asp-validation-for="Classe" class="text-danger"></span>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label asp-for="VidaMaxima">Vida Máxima</label>
+                <input asp-for="VidaMaxima" type="number" class="form-control" required min="1" />
+                <span asp-validation-for="VidaMaxima" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="VidaAtual">Vida Atual</label>
+                <input asp-for="VidaAtual" type="number" class="form-control" required min="0" />
+                <span asp-validation-for="VidaAtual" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label asp-for="SanidadeMaxima">Sanidade Máxima</label>
+                <input asp-for="SanidadeMaxima" type="number" class="form-control" required min="1" />
+                <span asp-validation-for="SanidadeMaxima" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="SanidadeAtual">Sanidade Atual</label>
+                <input asp-for="SanidadeAtual" type="number" class="form-control" required min="0" />
+                <span asp-validation-for="SanidadeAtual" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="ImagemUrl">URL da Imagem (Opcional)</label>
+            <input asp-for="ImagemUrl" class="form-control" type="url" />
+            <span asp-validation-for="ImagemUrl" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label>
+                <input type="checkbox" asp-for="Ativo" />
+                Personagem Ativo (visível no overlay)
+            </label>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

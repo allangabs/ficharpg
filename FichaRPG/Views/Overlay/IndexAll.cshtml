@@ -1,0 +1,216 @@
+@model List<FichaRPG.Models.Personagem>
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RPG Overlay - Todos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: transparent;
+            color: #fff;
+            padding: 20px;
+        }
+
+        .overlay-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 400px;
+        }
+
+        .personagem-overlay {
+            background: linear-gradient(135deg, rgba(30, 30, 45, 0.95), rgba(20, 20, 35, 0.95));
+            border: 2px solid rgba(100, 100, 150, 0.6);
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .personagem-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            border-bottom: 2px solid rgba(100, 100, 150, 0.3);
+            padding-bottom: 8px;
+        }
+
+        .personagem-imagem {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 2px solid rgba(100, 100, 150, 0.6);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        .personagem-nome {
+            font-size: 24px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+        }
+
+        .personagem-classe {
+            font-size: 14px;
+            color: #a8a8ff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-overlay {
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stat-value {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .stat-bar-overlay {
+            height: 25px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-fill-overlay {
+            height: 100%;
+            transition: width 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-fill-overlay::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.3),
+                transparent
+            );
+            animation: shimmer 2s infinite;
+        }
+
+        @@keyframes shimmer {
+            to {
+                left: 100%;
+            }
+        }
+
+        .vida-bar {
+            background: linear-gradient(90deg, #ff4444, #ff6b6b);
+            box-shadow: 0 0 10px rgba(255, 68, 68, 0.6);
+        }
+
+        .sanidade-bar {
+            background: linear-gradient(90deg, #6b4dff, #9b7dff);
+            box-shadow: 0 0 10px rgba(107, 77, 255, 0.6);
+        }
+
+        .stat-text-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 13px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9);
+            z-index: 1;
+        }
+
+        .critical-health {
+            animation: pulse 1s infinite;
+        }
+
+        @@keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+                box-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+            }
+            50% {
+                opacity: 0.7;
+                box-shadow: 0 0 30px rgba(255, 0, 0, 1);
+            }
+        }
+    </style>
+    <script>
+        // Auto-refresh a cada 2 segundos
+        setInterval(function() {
+            location.reload();
+        }, 2000);
+    </script>
+</head>
+<body>
+    <div class="overlay-container">
+        @foreach (var personagem in Model)
+        {
+            <div class="personagem-overlay">
+                <div class="personagem-header">
+                    <div>
+                        <div class="personagem-nome">@personagem.Nome</div>
+                        <div class="personagem-classe">@personagem.Classe</div>
+                    </div>
+                    @if (!string.IsNullOrEmpty(personagem.ImagemUrl))
+                    {
+                        <img src="@personagem.ImagemUrl" alt="@personagem.Nome" class="personagem-imagem" />
+                    }
+                </div>
+
+                <!-- Vida -->
+                <div class="stat-overlay">
+                    <div class="stat-label">
+                        <span>❤️ Vida</span>
+                        <span class="stat-value">@personagem.VidaAtual / @personagem.VidaMaxima</span>
+                    </div>
+                    <div class="stat-bar-overlay @(personagem.PorcentagemVida <= 25 ? "critical-health" : "")">
+                        <div class="stat-fill-overlay vida-bar" style="width: @personagem.PorcentagemVida%">
+                        </div>
+                        <div class="stat-text-overlay">@personagem.PorcentagemVida%</div>
+                    </div>
+                </div>
+
+                <!-- Sanidade -->
+                <div class="stat-overlay">
+                    <div class="stat-label">
+                        <span>🧠 Sanidade</span>
+                        <span class="stat-value">@personagem.SanidadeAtual / @personagem.SanidadeMaxima</span>
+                    </div>
+                    <div class="stat-bar-overlay">
+                        <div class="stat-fill-overlay sanidade-bar" style="width: @personagem.PorcentagemSanidade%">
+                        </div>
+                        <div class="stat-text-overlay">@personagem.PorcentagemSanidade%</div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</body>
+</html>

@@ -1,0 +1,128 @@
+@model List<FichaRPG.Models.Personagem>
+
+@{
+    ViewData["Title"] = "Gerenciamento de Personagens";
+}
+
+<div class="mestre-container">
+    <div class="header-section">
+        <h1>⚔️ Painel do Mestre</h1>
+        <a asp-action="Criar" class="btn btn-primary">+ Novo Personagem</a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <p>Nenhum personagem cadastrado ainda.</p>
+            <a asp-action="Criar" class="btn btn-primary">Criar Primeiro Personagem</a>
+        </div>
+    }
+    else
+    {
+        <div class="personagens-grid">
+            @foreach (var personagem in Model)
+            {
+                <div class="personagem-card @(personagem.Ativo ? "ativo" : "inativo")">
+                    <div class="card-header">
+                        <div class="personagem-info">
+                            <h3>@personagem.Nome</h3>
+                            <span class="classe">@personagem.Classe</span>
+                        </div>
+                        <div class="card-actions">
+                            <form asp-action="AlternarAtivo" method="post" style="display:inline;">
+                                <input type="hidden" name="id" value="@personagem.Id" />
+                                <button type="submit" class="btn-icon" title="@(personagem.Ativo ? "Desativar" : "Ativar")">
+                                    @(personagem.Ativo ? "👁️" : "🚫")
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="stats-section">
+                        <!-- Vida -->
+                        <div class="stat-group">
+                            <label>❤️ Vida</label>
+                            <div class="stat-bar-container">
+                                <div class="stat-bar vida">
+                                    <div class="stat-fill" style="width: @personagem.PorcentagemVida%"></div>
+                                    <span class="stat-text">@personagem.VidaAtual / @personagem.VidaMaxima</span>
+                                </div>
+                            </div>
+                            <div class="stat-controls">
+                                <form asp-action="AplicarDano" method="post" class="inline-form">
+                                    <input type="hidden" name="id" value="@personagem.Id" />
+                                    <input type="number" name="dano" value="1" min="1" class="stat-input" />
+                                    <button type="submit" class="btn btn-danger btn-sm">Dano</button>
+                                </form>
+                                <form asp-action="Curar" method="post" class="inline-form">
+                                    <input type="hidden" name="id" value="@personagem.Id" />
+                                    <input type="number" name="cura" value="1" min="1" class="stat-input" />
+                                    <button type="submit" class="btn btn-success btn-sm">Curar</button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Sanidade -->
+                        <div class="stat-group">
+                            <label>🧠 Sanidade</label>
+                            <div class="stat-bar-container">
+                                <div class="stat-bar sanidade">
+                                    <div class="stat-fill" style="width: @personagem.PorcentagemSanidade%"></div>
+                                    <span class="stat-text">@personagem.SanidadeAtual / @personagem.SanidadeMaxima</span>
+                                </div>
+                            </div>
+                            <div class="stat-controls">
+                                <form asp-action="AlterarSanidade" method="post" class="inline-form">
+                                    <input type="hidden" name="id" value="@personagem.Id" />
+                                    <input type="number" name="valor" value="-1" class="stat-input" />
+                                    <button type="submit" class="btn btn-warning btn-sm">Alterar</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer">
+                        <a asp-action="Editar" asp-route-id="@personagem.Id" class="btn btn-secondary btn-sm">✏️ Editar</a>
+                        <button type="button" class="btn btn-info btn-sm btn-copy" onclick="copiarUrlOverlay('@personagem.Id', this)">🎥 URL OBS</button>
+                        <form asp-action="Remover" method="post" style="display:inline;" onsubmit="return confirm('Deseja remover este personagem?');">
+                            <input type="hidden" name="id" value="@personagem.Id" />
+                            <button type="submit" class="btn btn-danger btn-sm">🗑️ Remover</button>
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="overlay-link">
+            <p>🎥 Para usar no OBS, adicione uma fonte "Browser" com a URL:</p>
+            <code>@Url.Action("Index", "Overlay", null, Context.Request.Scheme)</code>
+        </div>
+    }
+</div>
+
+<script>
+    function copiarUrlOverlay(id, button) {
+        const url = window.location.origin + '/Overlay?id=' + id;
+        
+        navigator.clipboard.writeText(url).then(function() {
+            // Adicionar classe de sucesso
+            button.classList.add('copied');
+            const originalText = button.innerHTML;
+            button.innerHTML = '✓ Copiado!';
+            
+            // Remover animação após 2 segundos
+            setTimeout(function() {
+                button.classList.remove('copied');
+                button.innerHTML = originalText;
+            }, 2000);
+        }).catch(function() {
+            // Fallback se clipboard API não funcionar
+            button.classList.add('copied-error');
+            button.innerHTML = '❌ Erro';
+            setTimeout(function() {
+                button.classList.remove('copied-error');
+                button.innerHTML = '🎥 URL OBS';
+            }, 2000);
+        });
+    }
+</script>
