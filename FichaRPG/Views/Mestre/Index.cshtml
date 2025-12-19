@@ -7,7 +7,10 @@
 <div class="mestre-container">
     <div class="header-section">
         <h1>⚔️ Painel do Mestre</h1>
-        <a asp-action="Criar" class="btn btn-primary">+ Novo Personagem</a>
+        <div>
+            <button class="btn btn-success me-2" onclick="abrirModalDados()">🎲 Rolar Dados</button>
+            <a asp-action="Criar" class="btn btn-primary">+ Novo Personagem</a>
+        </div>
     </div>
 
     @if (!Model.Any())
@@ -100,23 +103,98 @@
     }
 </div>
 
+<!-- Modal de Rolagem de Dados -->
+<div class="modal fade" id="modalDados" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-light">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title">🎲 Sistema de Rolagem de Dados</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Tipo de Dado</label>
+                    <div class="d-flex gap-2 flex-wrap">
+                        <button class="btn btn-outline-primary dado-btn" data-dado="4">D4</button>
+                        <button class="btn btn-outline-primary dado-btn" data-dado="6">D6</button>
+                        <button class="btn btn-outline-primary dado-btn" data-dado="8">D8</button>
+                        <button class="btn btn-outline-primary dado-btn" data-dado="12">D12</button>
+                        <button class="btn btn-outline-primary dado-btn active" data-dado="20">D20</button>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="quantidade" class="form-label fw-bold">Quantidade de Dados</label>
+                    <input type="number" class="form-control" id="quantidade" min="1" max="10" value="1">
+                </div>
+
+                <div class="mb-3">
+                    <label for="personagem" class="form-label fw-bold">Personagem (Opcional)</label>
+                    <select class="form-select" id="personagem">
+                        <option value="">-- Nenhum --</option>
+                        @foreach (var p in Model.Where(x => x.Ativo))
+                        {
+                            <option value="@p.Id">@p.Nome</option>
+                        }
+                    </select>
+                </div>
+
+                <!-- Área de Resultado -->
+                <div id="resultadoArea" style="display: none;" class="mt-4">
+                    <div class="card bg-secondary text-center">
+                        <div class="card-body">
+                            <h4 class="mb-3">🎲 Resultado da Rolagem</h4>
+                            <div id="personagemInfo" class="mb-3"></div>
+                            <div class="display-1 text-success fw-bold mb-3" id="maiorValor">-</div>
+                            <div class="fs-5 mb-2">Maior valor rolado</div>
+                            <div class="d-flex gap-2 justify-content-center flex-wrap" id="todosResultados"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                <button class="btn btn-success" id="btnRolar">
+                    <i class="bi bi-dice-5"></i> Rolar Dados
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Animação de Dados Rolando -->
+<div id="dadoAnimacao" class="dado-animacao">
+    <div class="dado-container">
+        <div class="dado">🎲</div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@latest/dist/browser/signalr.min.js"></script>
 <script>
+    let modalDados;
+    let tipoDadoSelecionado = 20;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        modalDados = new bootstrap.Modal(document.getElementById('modalDados'));
+    });
+
+    function abrirModalDados() {
+        modalDados.show();
+    }
+
     function copiarUrlOverlay(id, button) {
         const url = window.location.origin + '/Overlay?id=' + id;
         
         navigator.clipboard.writeText(url).then(function() {
-            // Adicionar classe de sucesso
             button.classList.add('copied');
             const originalText = button.innerHTML;
             button.innerHTML = '✓ Copiado!';
             
-            // Remover animação após 2 segundos
             setTimeout(function() {
                 button.classList.remove('copied');
                 button.innerHTML = originalText;
             }, 2000);
         }).catch(function() {
-            // Fallback se clipboard API não funcionar
             button.classList.add('copied-error');
             button.innerHTML = '❌ Erro';
             setTimeout(function() {
@@ -124,5 +202,96 @@
                 button.innerHTML = '🎥 URL OBS';
             }, 2000);
         });
+    }
+
+    // Seleção de tipo de dado
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('dado-btn')) {
+            document.querySelectorAll('.dado-btn').forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+            tipoDadoSelecionado = parseInt(e.target.dataset.dado);
+        }
+    });
+
+    // Rolar dados
+    document.addEventListener('click', function(e) {
+        if (e.target.id === 'btnRolar' || e.target.closest('#btnRolar')) {
+            rolarDados();
+        }
+    });
+
+    async function rolarDados() {
+        const quantidade = parseInt(document.getElementById('quantidade').value);
+        const personagemId = document.getElementById('personagem').value || null;
+
+        if (quantidade < 1 || quantidade > 10) {
+            alert('Quantidade deve ser entre 1 e 10');
+            return;
+        }
+
+        mostrarAnimacao();
+
+        try {
+            const response = await fetch('/Home/RolarDado', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    tipoDado: tipoDadoSelecionado,
+                    quantidade: quantidade,
+                    personagemId: personagemId
+                })
+            });
+
+            const resultado = await response.json();
+            
+            setTimeout(() => {
+                esconderAnimacao();
+                mostrarResultado(resultado);
+            }, 1500);
+
+        } catch (error) {
+            console.error('Erro ao rolar dado:', error);
+            esconderAnimacao();
+            alert('Erro ao rolar dado');
+        }
+    }
+
+    function mostrarAnimacao() {
+        document.getElementById('dadoAnimacao').classList.add('active');
+    }
+
+    function esconderAnimacao() {
+        document.getElementById('dadoAnimacao').classList.remove('active');
+    }
+
+    function mostrarResultado(resultado) {
+        const resultadoArea = document.getElementById('resultadoArea');
+        const personagemInfo = document.getElementById('personagemInfo');
+        const maiorValor = document.getElementById('maiorValor');
+        const todosResultados = document.getElementById('todosResultados');
+
+        if (resultado.personagemNome) {
+            personagemInfo.innerHTML = `<span class="badge bg-info fs-6">${resultado.personagemNome}</span>`;
+        } else {
+            personagemInfo.innerHTML = '';
+        }
+
+        maiorValor.textContent = resultado.maiorValor;
+        maiorValor.classList.add('pulse-animation');
+        setTimeout(() => maiorValor.classList.remove('pulse-animation'), 1000);
+
+        todosResultados.innerHTML = '';
+        resultado.resultados.forEach((valor, index) => {
+            const isMaximo = valor === resultado.maiorValor;
+            const badge = document.createElement('span');
+            badge.className = `badge ${isMaximo ? 'bg-success' : 'bg-secondary'} fs-5 resultado-badge`;
+            badge.textContent = valor;
+            badge.style.animationDelay = `${index * 0.1}s`;
+            todosResultados.appendChild(badge);
+        });
+
+        resultadoArea.style.display = 'block';
     }
 </script>

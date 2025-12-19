@@ -2,11 +2,13 @@ using Microsoft.EntityFrameworkCore;
 using FichaRPG.Data;
 using FichaRPG.Repositories;
 using FichaRPG.Services;
+using FichaRPG.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddSignalR();
 
 // Configurar SQLite
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -16,6 +18,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // Configurar Repository Pattern
 builder.Services.AddScoped<IPersonagemRepository, PersonagemRepository>();
 builder.Services.AddScoped<PersonagemService>();
+builder.Services.AddSingleton<DadoService>();
 
 var app = builder.Build();
 
@@ -44,5 +47,8 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Mestre}/{action=Index}/{id?}");
+
+app.MapHub<DadoHub>("/dadoHub");
+app.MapHub<PersonagemHub>("/personagemHub");
 
 app.Run();

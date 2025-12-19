@@ -43,6 +43,81 @@
             margin-bottom: 12px;
             border-bottom: 2px solid rgba(100, 100, 150, 0.3);
             padding-bottom: 8px;
+            position: relative;
+        }
+
+        /* Animação de dado inline no header */
+        .dado-inline-animation {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.95);
+            padding: 20px 30px;
+            border-radius: 15px;
+            border: 3px solid #00ff88;
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.6);
+        }
+
+        .dado-inline-animation.show {
+            display: flex;
+            animation: popIn 0.3s ease-out;
+        }
+
+        .dado-inline-animation .tipo-dado {
+            font-size: 18px;
+            font-weight: bold;
+            color: #00ff88;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .dado-inline-animation .dado-icon {
+            font-size: 50px;
+            animation: spin 0.8s ease-in-out;
+        }
+
+        .dado-inline-animation .resultado {
+            font-size: 60px;
+            font-weight: bold;
+            color: #00ff88;
+            text-shadow: 0 0 20px rgba(0, 255, 136, 0.8);
+            animation: numberPop 0.5s ease-out;
+        }
+
+        @@keyframes popIn {
+            from {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @@keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @@keyframes numberPop {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.3);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
         .personagem-imagem {
@@ -52,6 +127,50 @@
             object-fit: cover;
             border: 2px solid rgba(100, 100, 150, 0.6);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        /* Container da imagem para posicionar a animação */
+        .imagem-container {
+            position: relative;
+            width: 60px;
+            height: 60px;
+        }
+
+        /* Animação de dado sobre a imagem */
+        .dado-sobre-imagem {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.9);
+            border-radius: 8px;
+            z-index: 200;
+            border: 2px solid #00ff88;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.8);
+        }
+
+        .dado-sobre-imagem.show {
+            display: flex;
+            animation: popIn 0.3s ease-out;
+        }
+
+        .dado-sobre-imagem .dado-icon {
+            font-size: 35px;
+            animation: spin 0.8s ease-in-out infinite;
+        }
+
+        .dado-sobre-imagem .resultado {
+            font-size: 35px;
+            font-weight: bold;
+            color: #00ff88;
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.8);
+            animation: numberPop 0.5s ease-out;
         }
 
         .personagem-nome {
@@ -160,12 +279,358 @@
                 box-shadow: 0 0 30px rgba(255, 0, 0, 1);
             }
         }
+
+        /* Animação de Dados no Overlay */
+        .dado-overlay-animation {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.95);
+            border-radius: 20px;
+            padding: 60px;
+            box-shadow: 0 0 50px rgba(255, 255, 255, 0.5);
+            animation: fadeInScale 0.5s ease-out;
+            display: none;
+            text-align: center;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .dado-overlay-animation.show {
+            display: block;
+        }
+
+        .dado-overlay-animation .personagem-badge {
+            background: rgba(0, 255, 136, 0.2);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #00ff88;
+            margin-bottom: 20px;
+            border: 2px solid #00ff88;
+        }
+
+        .dado-overlay-animation .dado-icon {
+            font-size: 80px;
+            animation: rotate3d 1s ease-in-out;
+            display: block;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.5));
+        }
+
+        .dado-overlay-animation .resultado-valor {
+            font-size: 140px;
+            font-weight: bold;
+            color: #00ff88;
+            text-shadow: 0 0 30px rgba(0, 255, 136, 0.8);
+            animation: pulseGlow 0.5s ease-in-out;
+            line-height: 1;
+            margin: 20px 0;
+        }
+
+        .dado-overlay-animation .resultado-info {
+            font-size: 20px;
+            color: #fff;
+            margin-top: 20px;
+            opacity: 0.9;
+        }
+
+        .dado-overlay-animation .todos-resultados {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .dado-overlay-animation .resultado-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 24px;
+            font-weight: bold;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .dado-overlay-animation .resultado-item.maximo {
+            background: rgba(0, 255, 136, 0.2);
+            border-color: #00ff88;
+            color: #00ff88;
+        }
+
+        @@keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.5);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        @@keyframes rotate3d {
+            0% { transform: rotateX(0deg) rotateY(0deg); }
+            100% { transform: rotateX(360deg) rotateY(360deg); }
+        }
+
+        @@keyframes pulseGlow {
+            0%, 100% {
+                transform: scale(1);
+                text-shadow: 0 0 30px rgba(0, 255, 136, 0.8);
+            }
+            50% {
+                transform: scale(1.1);
+                text-shadow: 0 0 50px rgba(0, 255, 136, 1);
+            }
+        }
+
+        .fade-out {
+            animation: fadeOut 1s ease-out forwards;
+        }
+
+        @@keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@latest/dist/browser/signalr.min.js"></script>
     <script>
-        // Auto-refresh a cada 2 segundos
-        setInterval(function() {
-            location.reload();
-        }, 2000);
+        // Mapa de personagens para fácil acesso
+        const personagensMap = new Map();
+
+        // Conectar ao SignalR para dados
+        const dadoConnection = new signalR.HubConnectionBuilder()
+            .withUrl("/dadoHub")
+            .build();
+
+        dadoConnection.on("ReceberRolagem", function (rolagem) {
+            // Se tem personagem específico, mostrar sobre a imagem dele
+            if (rolagem.personagemId) {
+                mostrarAnimacaoSobreImagemPorId(rolagem);
+            }
+            // Não mostrar nada se não tiver personagem selecionado
+        });
+
+        dadoConnection.start().catch(function (err) {
+            console.error('Erro ao conectar DadoHub:', err.toString());
+        });
+
+        // Conectar ao SignalR para atualizações de personagem
+        const personagemConnection = new signalR.HubConnectionBuilder()
+            .withUrl("/personagemHub")
+            .build();
+
+        personagemConnection.on("PersonagemAtualizado", function (personagem) {
+            atualizarPersonagemNoOverlay(personagem);
+        });
+
+        personagemConnection.on("PersonagemCriado", function (personagem) {
+            adicionarPersonagemNoOverlay(personagem);
+        });
+
+        personagemConnection.start().catch(function (err) {
+            console.error('Erro ao conectar PersonagemHub:', err.toString());
+        });
+
+        function adicionarPersonagemNoOverlay(personagem) {
+            const container = document.querySelector('.overlay-container');
+            
+            const imagemHtml = personagem.imagemUrl ? 
+                `<div class="imagem-container" data-personagem-id="${personagem.id}">
+                    <img src="${personagem.imagemUrl}" alt="${personagem.nome}" class="personagem-imagem" />
+                </div>` : '';
+
+            const novoCard = `
+                <div class="personagem-overlay">
+                    <div class="personagem-header">
+                        <div>
+                            <div class="personagem-nome">${personagem.nome}</div>
+                            <div class="personagem-classe">${personagem.classe}</div>
+                        </div>
+                        ${imagemHtml}
+                    </div>
+
+                    <div class="stat-overlay">
+                        <div class="stat-label">
+                            <span>❤️ Vida</span>
+                            <span class="stat-value">${personagem.vidaAtual} / ${personagem.vidaMaxima}</span>
+                        </div>
+                        <div class="stat-bar-overlay">
+                            <div class="stat-fill-overlay vida-bar" style="width: ${personagem.porcentagemVida}%"></div>
+                            <div class="stat-text-overlay">${personagem.porcentagemVida}%</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-overlay">
+                        <div class="stat-label">
+                            <span>🧠 Sanidade</span>
+                            <span class="stat-value">${personagem.sanidadeAtual} / ${personagem.sanidadeMaxima}</span>
+                        </div>
+                        <div class="stat-bar-overlay">
+                            <div class="stat-fill-overlay sanidade-bar" style="width: ${personagem.porcentagemSanidade}%"></div>
+                            <div class="stat-text-overlay">${personagem.porcentagemSanidade}%</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            container.insertAdjacentHTML('beforeend', novoCard);
+        }
+
+        function atualizarPersonagemNoOverlay(personagem) {
+            // Encontrar o card do personagem pelo ID (vamos usar um data attribute)
+            const cards = document.querySelectorAll('.personagem-overlay');
+            cards.forEach(card => {
+                // Verificar pelo nome (não é ideal, mas funciona se os nomes são únicos)
+                const nomeElement = card.querySelector('.personagem-nome');
+                if (nomeElement && nomeElement.textContent === personagem.nome) {
+                    // Atualizar Vida
+                    const vidaValues = card.querySelectorAll('.stat-value');
+                    vidaValues[0].textContent = `${personagem.vidaAtual} / ${personagem.vidaMaxima}`;
+                    
+                    const vidaFill = card.querySelector('.vida-bar');
+                    const vidaBar = vidaFill.closest('.stat-bar-overlay');
+                    vidaFill.style.width = `${personagem.porcentagemVida}%`;
+                    vidaBar.querySelector('.stat-text-overlay').textContent = `${personagem.porcentagemVida}%`;
+                    
+                    if (personagem.porcentagemVida <= 25) {
+                        vidaBar.classList.add('critical-health');
+                    } else {
+                        vidaBar.classList.remove('critical-health');
+                    }
+
+                    // Atualizar Sanidade
+                    vidaValues[1].textContent = `${personagem.sanidadeAtual} / ${personagem.sanidadeMaxima}`;
+                    const sanidadeFill = card.querySelector('.sanidade-bar');
+                    sanidadeFill.style.width = `${personagem.porcentagemSanidade}%`;
+                    sanidadeFill.closest('.stat-bar-overlay').querySelector('.stat-text-overlay').textContent = `${personagem.porcentagemSanidade}%`;
+                }
+            });
+        }
+
+        function mostrarAnimacaoSobreImagemPorId(rolagem) {
+            // Encontrar o container de imagem específico do personagem
+            const container = document.querySelector(`.imagem-container[data-personagem-id="${rolagem.personagemId}"]`);
+            
+            if (!container) return; // Se não encontrar, não faz nada
+
+            let animacao = container.querySelector('.dado-sobre-imagem');
+            if (!animacao) {
+                animacao = document.createElement('div');
+                animacao.className = 'dado-sobre-imagem';
+                container.appendChild(animacao);
+            }
+
+            // Fase 1: Mostrar dado girando
+            animacao.innerHTML = `<div class="dado-icon">🎲</div>`;
+            animacao.classList.add('show');
+
+            // Fase 2: Após 1.2s, mostrar resultado
+            setTimeout(() => {
+                animacao.innerHTML = `<div class="resultado">${rolagem.maiorValor}</div>`;
+            }, 1200);
+
+            // Fase 3: Esconder após 3.5s
+            setTimeout(() => {
+                animacao.classList.add('fade-out');
+                setTimeout(() => {
+                    animacao.classList.remove('show', 'fade-out');
+                }, 500);
+            }, 3500);
+        }
+
+        function mostrarAnimacaoInline(rolagem) {
+            // Encontrar todos os cards de personagem
+            const personagemCards = document.querySelectorAll('.personagem-overlay');
+            
+            // Para cada card, verificar se já tem animação ou criar
+            personagemCards.forEach(card => {
+                const header = card.querySelector('.personagem-header');
+                let animacao = header.querySelector('.dado-inline-animation');
+                
+                if (!animacao) {
+                    animacao = document.createElement('div');
+                    animacao.className = 'dado-inline-animation';
+                    header.appendChild(animacao);
+                }
+            });
+
+            // Se é para um personagem específico, mostrar só no dele
+            // Para simplificar, vamos mostrar em todos (como é um overlay de todos)
+            const headers = document.querySelectorAll('.personagem-header');
+            headers.forEach(header => {
+                const animacao = header.querySelector('.dado-inline-animation');
+                const tipoDadoTexto = `D${rolagem.tipoDado}`;
+
+                // Fase 1: Mostrar dado girando
+                animacao.innerHTML = `
+                    <div class="tipo-dado">${tipoDadoTexto}</div>
+                    <div class="dado-icon">🎲</div>
+                `;
+                animacao.classList.add('show');
+
+                // Fase 2: Após 1s, mostrar resultado
+                setTimeout(() => {
+                    animacao.innerHTML = `
+                        <div class="tipo-dado">${tipoDadoTexto}</div>
+                        <div class="resultado">${rolagem.maiorValor}</div>
+                    `;
+                }, 1000);
+
+                // Fase 3: Esconder após 3s
+                setTimeout(() => {
+                    animacao.classList.add('fade-out');
+                    setTimeout(() => {
+                        animacao.classList.remove('show', 'fade-out');
+                    }, 500);
+                }, 3000);
+            });
+        }
+
+        function mostrarAnimacaoDado(rolagem) {
+            // Criar elemento de animação se não existir
+            let animacao = document.getElementById('dadoAnimacaoOverlay');
+            if (!animacao) {
+                animacao = document.createElement('div');
+                animacao.id = 'dadoAnimacaoOverlay';
+                animacao.className = 'dado-overlay-animation';
+                document.body.appendChild(animacao);
+            }
+
+            // Montar conteúdo
+            let personagemBadge = '';
+            if (rolagem.personagemNome) {
+                personagemBadge = `<div class="personagem-badge">${rolagem.personagemNome}</div>`;
+            }
+
+            let todosResultadosHtml = '';
+            rolagem.resultados.forEach(valor => {
+                const isMaximo = valor === rolagem.maiorValor;
+                todosResultadosHtml += `<span class="resultado-item ${isMaximo ? 'maximo' : ''}">${valor}</span>`;
+            });
+
+            animacao.innerHTML = `
+                ${personagemBadge}
+                <div class="dado-icon">🎲</div>
+                <div class="resultado-valor">${rolagem.maiorValor}</div>
+                <div class="resultado-info">Maior valor rolado</div>
+                <div class="todos-resultados">${todosResultadosHtml}</div>
+            `;
+
+            // Mostrar animação
+            animacao.classList.add('show');
+
+            // Esconder após 4 segundos
+            setTimeout(() => {
+                animacao.classList.add('fade-out');
+                setTimeout(() => {
+                    animacao.classList.remove('show', 'fade-out');
+                }, 1000);
+            }, 4000);
+        }
     </script>
 </head>
 <body>
@@ -180,7 +645,9 @@
                     </div>
                     @if (!string.IsNullOrEmpty(personagem.ImagemUrl))
                     {
-                        <img src="@personagem.ImagemUrl" alt="@personagem.Nome" class="personagem-imagem" />
+                        <div class="imagem-container" data-personagem-id="@personagem.Id">
+                            <img src="@personagem.ImagemUrl" alt="@personagem.Nome" class="personagem-imagem" />
+                        </div>
                     }
                 </div>
 

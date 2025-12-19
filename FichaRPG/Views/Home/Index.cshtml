@@ -1,8 +1,170 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Rolar Dados";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container mt-4">
+    <div class="text-center mb-4">
+        <h1 class="display-4">🎲 Sistema de Rolagem de Dados</h1>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h3 class="card-title text-center mb-4">Configurar Rolagem</h3>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Tipo de Dado</label>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button class="btn btn-outline-primary dado-btn" data-dado="4">D4</button>
+                            <button class="btn btn-outline-primary dado-btn" data-dado="6">D6</button>
+                            <button class="btn btn-outline-primary dado-btn" data-dado="8">D8</button>
+                            <button class="btn btn-outline-primary dado-btn" data-dado="12">D12</button>
+                            <button class="btn btn-outline-primary dado-btn active" data-dado="20">D20</button>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="quantidade" class="form-label fw-bold">Quantidade de Dados</label>
+                        <input type="number" class="form-control" id="quantidade" min="1" max="10" value="1">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="personagem" class="form-label fw-bold">Personagem (Opcional)</label>
+                        <select class="form-select" id="personagem">
+                            <option value="">-- Nenhum --</option>
+                            @foreach (var p in ViewBag.Personagens)
+                            {
+                                <option value="@p.Id">@p.Nome</option>
+                            }
+                        </select>
+                    </div>
+
+                    <button class="btn btn-success btn-lg w-100" id="btnRolar">
+                        <i class="bi bi-dice-5"></i> Rolar Dados
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Área de Resultado -->
+    <div class="row justify-content-center mt-4" id="resultadoArea" style="display: none;">
+        <div class="col-md-8">
+            <div class="card shadow resultado-card">
+                <div class="card-body text-center">
+                    <h4 class="mb-3">🎲 Resultado da Rolagem</h4>
+                    <div id="personagemInfo" class="mb-3"></div>
+                    <div class="display-1 text-primary fw-bold mb-3" id="maiorValor">-</div>
+                    <div class="fs-5 mb-2">Maior valor rolado</div>
+                    <div class="d-flex gap-2 justify-content-center flex-wrap" id="todosResultados"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Animação de Dados Rolando -->
+    <div id="dadoAnimacao" class="dado-animacao">
+        <div class="dado-container">
+            <div class="dado">🎲</div>
+        </div>
+    </div>
 </div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@latest/dist/browser/signalr.min.js"></script>
+    <script>
+        let tipoDadoSelecionado = 20;
+
+        // Seleção de tipo de dado
+        document.querySelectorAll('.dado-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.dado-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                tipoDadoSelecionado = parseInt(this.dataset.dado);
+            });
+        });
+
+        // Rolar dados
+        document.getElementById('btnRolar').addEventListener('click', async function() {
+            const quantidade = parseInt(document.getElementById('quantidade').value);
+            const personagemId = document.getElementById('personagem').value || null;
+
+            if (quantidade < 1 || quantidade > 10) {
+                alert('Quantidade deve ser entre 1 e 10');
+                return;
+            }
+
+            // Mostrar animação
+            mostrarAnimacao();
+
+            try {
+                const response = await fetch('/Home/RolarDado', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        tipoDado: tipoDadoSelecionado,
+                        quantidade: quantidade,
+                        personagemId: personagemId
+                    })
+                });
+
+                const resultado = await response.json();
+                
+                // Aguardar um pouco da animação
+                setTimeout(() => {
+                    esconderAnimacao();
+                    mostrarResultado(resultado);
+                }, 1500);
+
+            } catch (error) {
+                console.error('Erro ao rolar dado:', error);
+                esconderAnimacao();
+                alert('Erro ao rolar dado');
+            }
+        });
+
+        function mostrarAnimacao() {
+            document.getElementById('dadoAnimacao').classList.add('active');
+        }
+
+        function esconderAnimacao() {
+            document.getElementById('dadoAnimacao').classList.remove('active');
+        }
+
+        function mostrarResultado(resultado) {
+            const resultadoArea = document.getElementById('resultadoArea');
+            const personagemInfo = document.getElementById('personagemInfo');
+            const maiorValor = document.getElementById('maiorValor');
+            const todosResultados = document.getElementById('todosResultados');
+
+            // Informação do personagem
+            if (resultado.personagemNome) {
+                personagemInfo.innerHTML = `<span class="badge bg-info fs-6">${resultado.personagemNome}</span>`;
+            } else {
+                personagemInfo.innerHTML = '';
+            }
+
+            // Maior valor
+            maiorValor.textContent = resultado.maiorValor;
+            maiorValor.classList.add('pulse-animation');
+            setTimeout(() => maiorValor.classList.remove('pulse-animation'), 1000);
+
+            // Todos os resultados
+            todosResultados.innerHTML = '';
+            resultado.resultados.forEach((valor, index) => {
+                const isMaximo = valor === resultado.maiorValor;
+                const badge = document.createElement('span');
+                badge.className = `badge ${isMaximo ? 'bg-success' : 'bg-secondary'} fs-5 resultado-badge`;
+                badge.textContent = valor;
+                badge.style.animationDelay = `${index * 0.1}s`;
+                todosResultados.appendChild(badge);
+            });
+
+            resultadoArea.style.display = 'block';
+            resultadoArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    </script>
+}
