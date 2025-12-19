@@ -1,181 +1,126 @@
-# FichaRPG
+# Ficha RPG - Sistema de Gerenciamento de Personagens
 
-> Projeto: FichaRPG — sistema/visualizador/gerador de fichas de RPG (template)
->
-> Um README inicial em Português para o repositório. Personalize os trechos entre < > com as informações reais do projeto.
+Sistema web ASP.NET Core MVC para gerenciar personagens de RPG com integração para OBS Studio.
 
-Status: WIP (em desenvolvimento)
+## 🎮 Funcionalidades
 
----
+- **Cadastro de Personagens**: Crie e gerencie personagens com nome, classe, vida e sanidade
+- **Controle do Mestre**: Interface completa para o mestre controlar atributos dos personagens
+- **Gerenciamento de Vida**: Aplique dano e cure personagens em tempo real
+- **Controle de Sanidade**: Altere a sanidade dos personagens
+- **Overlay para OBS**: View especial com fundo transparente para integração com OBS Studio
+- **Interface Moderna**: Design responsivo com gradientes e animações
 
-## Sobre
+## 🚀 Como Executar
 
-FichaRPG é um projeto que oferece ferramentas para criar, visualizar e gerenciar fichas de RPG. O objetivo é facilitar a criação de personagens, salvar versões da ficha, exportar/importar e integrar com mecânicas específicas do sistema de jogo usado (ex.: D&D, BRP, GURPS, sistemas nacionais).
-
-Este README é um template inicial — atualize com informações específicas do seu projeto (tecnologias, comandos, exemplos de uso).
-
----
-
-## Funcionalidades (exemplos)
-
-- Criar e editar fichas de personagem
-- Validação de atributos e cálculos automáticos (modificadores, pontos de vida, perícias)
-- Exportar/importar em JSON / PDF
-- Templates e presets para diferentes sistemas de RPG
-- Histórico de versões / undo
-- Interface web responsiva / CLI (dependendo da implementação)
-
----
-
-## Demonstração
-
-- Demo: <inserir URL da demo, se houver>
-- Screenshots: coloque imagens em `/docs` ou na Wiki e referencie aqui.
-
----
-
-## Tecnologias (sugestão)
-
-- Linguagem(s): <ex.: JavaScript, TypeScript, Python, Rust — atualize conforme o repositório>
-- Front-end: <ex.: React, Vue, Svelte, HTML/CSS>
-- Back-end: <ex.: Node.js, FastAPI, Flask>
-- Banco de dados: <ex.: SQLite, PostgreSQL, LocalStorage>
-- Ferramentas: <ex.: Vite, Webpack, Docker>
-
-Atualize esta seção para refletir a composição real do repositório.
-
----
-
-## Requisitos
-
-- Node.js >= X.X.X (se aplicável)
-- Python >= X.X (se aplicável)
-- npm / yarn / pnpm (se aplicável)
-- Docker (opcional)
-
-Substitua pelos requisitos reais.
-
----
-
-## Instalação (exemplo genérico)
-
-1. Clone o repositório:
-   ```
-   git clone https://github.com/allangabs/ficharpg.git
-   cd ficharpg
+1. **Navegue até a pasta do projeto:**
+   ```bash
+   cd FichaRPG
    ```
 
-2. Instale dependências (exemplo Node):
-   ```
-   npm install
-   # ou
-   yarn
+2. **Execute o projeto:**
+   ```bash
+   dotnet run
    ```
 
-3. Configurar variáveis de ambiente:
-   - Copie `.env.example` para `.env` e ajuste as variáveis necessárias.
+3. **Acesse a aplicação:**
+   - Painel do Mestre: `https://localhost:5001/Mestre`
+   - Overlay para OBS: `https://localhost:5001/Overlay`
 
-4. Rodar em modo de desenvolvimento:
-   ```
-   npm run dev
-   # ou
-   yarn dev
-   ```
+## 📦 Publicar Aplicação
 
-Se o projeto for apenas front-end estático, substitua os comandos conforme necessário. Se usar Docker, adicione instruções com `docker build` / `docker run` ou `docker-compose`.
+Para criar uma versão publicada e otimizada da aplicação:
 
----
-
-## Uso
-
-- Acesse `http://localhost:3000` (ou a porta configurada) para usar a interface web.
-- Exemplos de comandos CLI (se aplicável):
-  ```
-  # Gerar ficha
-  npm run generate -- --template=guerreiro --nome="Thorg"
-  ```
-
-Inclua exemplos reais de uso, payloads JSON e comandos.
-
----
-
-## Estrutura do repositório (sugestão)
-
-- /src — código-fonte
-- /public — ativos estáticos
-- /docs — documentação e imagens
-- /scripts — utilitários
-- /tests — testes automatizados
-
-Ajuste conforme a estrutura real.
-
----
-
-## Testes
-
-Executar testes:
-```
-npm test
-# ou
-yarn test
+```bash
+dotnet publish -c Release -o ./publish
 ```
 
-Cobertura:
+Isso irá:
+- Compilar a aplicação em modo Release (otimizado)
+- Gerar todos os arquivos necessários na pasta `./publish`
+- Incluir o banco de dados SQLite
+
+Para executar a versão publicada:
+
+```bash
+cd publish
+dotnet FichaRPG.dll
 ```
-npm run test:coverage
+
+**Nota**: A aplicação publicada ainda precisa do .NET Runtime 8.0 instalado para funcionar.
+
+## 🎥 Integração com OBS
+
+1. No OBS, adicione uma nova fonte do tipo **"Browser"**
+2. Configure a URL: `https://localhost:5001/Overlay`
+3. Defina as dimensões desejadas (recomendado: 400x600)
+4. Marque a opção **"Desligar a origem quando não estiver visível"** para melhor performance
+5. A tela do overlay atualiza automaticamente a cada 2 segundos
+
+## 📋 Estrutura do Projeto
+
+```
+FichaRPG/
+├── Controllers/
+│   ├── MestreController.cs     # Gerenciamento de personagens
+│   └── OverlayController.cs    # Overlay para OBS
+├── Models/
+│   └── Personagem.cs           # Modelo de dados
+├── Services/
+│   └── PersonagemService.cs    # Lógica de negócio
+├── Views/
+│   ├── Mestre/
+│   │   ├── Index.cshtml        # Lista de personagens
+│   │   ├── Criar.cshtml        # Criar personagem
+│   │   └── Editar.cshtml       # Editar personagem
+│   └── Overlay/
+│       └── Index.cshtml        # View para OBS
+└── wwwroot/
+    └── css/
+        └── site.css            # Estilos personalizados
 ```
 
-Substitua pelos scripts verdadeiros.
+## 🎨 Recursos Visuais
 
----
+- **Gradientes modernos** com tema escuro
+- **Barras de progresso animadas** para vida e sanidade
+- **Efeito de pulsação** quando a vida está crítica (≤25%)
+- **Animações suaves** em todas as interações
+- **Design responsivo** para diferentes resoluções
 
-## Como contribuir
+## 🛠️ Tecnologias
 
-1. Fork o projeto
-2. Crie uma branch com sua feature: `git checkout -b feat/nova-funcionalidade`
-3. Faça commits pequenos e claros
-4. Abra um Pull Request descrevendo:
-   - Qual problema a feature corrige
-   - Como testar
-   - Quais arquivos foram alterados
-5. Responda aos comentários e atualize conforme o feedback
+- ASP.NET Core 8.0
+- MVC Pattern
+- Razor Views
+- CSS3 com animações
+- HTML5
 
-Siga o padrão de código (linter/formatador) do projeto e adicione testes quando possível.
+## 📝 Uso
 
----
+### Criar Personagem
+1. Clique em "Novo Personagem"
+2. Preencha nome, classe, vida máxima/atual e sanidade máxima/atual
+3. Opcionalmente adicione uma URL de imagem
 
-## Roadmap (exemplos)
+### Controlar Personagem
+- **Dano**: Digite o valor e clique em "Dano" para reduzir a vida
+- **Curar**: Digite o valor e clique em "Curar" para restaurar vida
+- **Sanidade**: Digite valor positivo ou negativo e clique em "Alterar"
+- **Ativar/Desativar**: Controla se o personagem aparece no overlay
+- **Editar**: Altere qualquer atributo do personagem
+- **Remover**: Exclua permanentemente o personagem
 
-- [ ] Templates para diferentes sistemas (D&D 5e, BRP, etc)
-- [ ] Export para PDF com layout customizável
-- [ ] Suporte offline / PWA
-- [ ] Integração com geradores de nomes e NPCs
-- [ ] Localização (i18n)
+### Overlay no OBS
+Os personagens marcados como "Ativos" aparecem automaticamente no overlay com:
+- Nome e classe
+- Barra de vida com porcentagem
+- Barra de sanidade com porcentagem
+- Atualização automática a cada 2 segundos
 
----
+## ⚡ Dicas
 
-## Licença
-
-Escolha e adicione a licença do projeto, por exemplo:
-- MIT — veja o arquivo [LICENSE](LICENSE)
-
----
-
-## Contato
-
-- Autor: Allan Gabs (@allangabs)
-- Email: <seu-email@exemplo.com>
-- Repo: https://github.com/allangabs/ficharpg
-
----
-
-## Personalização rápida
-
-Para que eu gere uma versão finalizada e precisa do README, envie:
-- Uma descrição curta do projeto (2–3 frases)
-- Principais tecnologias usadas (linguagens, frameworks)
-- Comandos reais para instalar, rodar e testar
-- Licença desejada
-- Links (demo, issues, wiki) que queira incluir
-
-Obrigado — escrevi um README inicial completo e pronto para você adaptar. Se quiser, eu atualizo automaticamente com os comandos reais e badges (build, coverage, license) se você me passar os detalhes.
+- Use valores negativos na sanidade para reduzir
+- A vida crítica (≤25%) ativa uma animação de alerta
+- Personagens inativos ficam acinzentados no painel do mestre
+- O overlay tem fundo transparente, perfeito para o OBS
