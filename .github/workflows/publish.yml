@@ -26,21 +26,29 @@ jobs:
       run: dotnet build --configuration Release --no-restore
     
     - name: Publish Windows x64
-      run: dotnet publish FichaRPG/FichaRPG.csproj --configuration Release --output ./publish/win-x64 --runtime win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
+      run: dotnet publish FichaRPG/FichaRPG.csproj --configuration Release --output ./publish/win-x64 --runtime win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:IncludeAllContentForSelfExtract=true -p:EnableCompressionInSingleFile=true
     
     - name: Publish Linux x64
-      run: dotnet publish FichaRPG/FichaRPG.csproj --configuration Release --output ./publish/linux-x64 --runtime linux-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
+      run: dotnet publish FichaRPG/FichaRPG.csproj --configuration Release --output ./publish/linux-x64 --runtime linux-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:IncludeAllContentForSelfExtract=true -p:EnableCompressionInSingleFile=true
     
-    - name: Upload Windows artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: published-app-windows-x64
-        path: ./publish/win-x64
-        retention-days: 30
+    - name: Create Windows ZIP
+      run: Compress-Archive -Path ./publish/win-x64/* -DestinationPath ./FichaRPG-win-x64.zip
+      shell: pwsh
     
-    - name: Upload Linux artifacts
-      uses: actions/upload-artifact@v4
+    - name: Create Linux ZIP
+      run: Compress-Archive -Path ./publish/linux-x64/* -DestinationPath ./FichaRPG-linux-x64.zip
+      shell: pwsh
+    
+    - name: Create Release
+      if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+      uses: softprops/action-gh-release@v1
       with:
-        name: published-app-linux-x64
-        path: ./publish/linux-x64
-        retention-days: 30
+        tag_name: v${{ github.run_number }}
+        name: Release ${{ github.run_number }}
+        draft: false
+        prerelease: false
+        files: |
+          FichaRPG-win-x64.zip
+          FichaRPG-linux-x64.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
