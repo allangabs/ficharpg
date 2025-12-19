@@ -1,0 +1,46 @@
+name: Build and Publish
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+    
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+    
+    - name: Publish Windows x64
+      run: dotnet publish FichaRPG/FichaRPG.csproj --configuration Release --output ./publish/win-x64 --runtime win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
+    
+    - name: Publish Linux x64
+      run: dotnet publish FichaRPG/FichaRPG.csproj --configuration Release --output ./publish/linux-x64 --runtime linux-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
+    
+    - name: Upload Windows artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: published-app-windows-x64
+        path: ./publish/win-x64
+        retention-days: 30
+    
+    - name: Upload Linux artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: published-app-linux-x64
+        path: ./publish/linux-x64
+        retention-days: 30
